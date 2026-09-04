@@ -23,6 +23,7 @@ class HomePage(BasePage):
     def card_price(self, index):
         return self.card(index).locator(".price").inner_text().strip()
 
+
     def card_link(self, index):
         return self.card(index).locator("h4 a")
 

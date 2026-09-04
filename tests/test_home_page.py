@@ -1,13 +1,11 @@
 import re
-from itertools import count
-from os import name
 
 from config import BASE_URL
 from pages.home_page import HomePage
 from pages.product_page import ProductPage
 from pages.cart_page import CartPage
 
-PRICE_RE = re.compile(r"\d")
+PRICE_RE = re.compile(r"\d[\d\s,]*\s?Грн")
 
 
 def test_home_featured_cards_are_consistent(page):
@@ -21,7 +19,7 @@ def test_home_featured_cards_are_consistent(page):
         name = home.card_name(i)
         price = home.card_price(i)
         assert name
-        assert PRICE_RE.search(price)
+        assert PRICE_RE.search(price), f"Unexpected price format: {price!r}"
         assert home.card_link(i).get_attribute("href")
         assert home.add_to_cart_button(i).is_visible()
 
@@ -31,12 +29,13 @@ def test_card_opens_matching_product(page):
 
     index = 0
     expected_name = home.card_name(index)
+    expected_href = home.card_link(index).get_attribute("href")
 
     home.card_link(index).click()
 
     product = ProductPage(page)
     assert expected_name in product.product_name()
-    assert page.url.rstrip("/") != BASE_URL.rstrip("/")
+    assert page.url.rstrip("/") == expected_href.rstrip("/")
 
     page.go_back()
 
