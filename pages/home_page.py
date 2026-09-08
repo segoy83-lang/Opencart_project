@@ -11,8 +11,19 @@ class HomePage(BasePage):
         self.featured_cards = page.locator("#content .product-thumb")
         self.success_alert = page.locator(".alert-success")
 
+
+        self.menu = page.locator("#menu")
+        self.account_dropdown_toggle = page.locator("#top-links a[title='Обліковий запис']")
+        self.register_link = page.locator("#top-links a[href*='account/register']")
+        self.login_link = page.locator("#top-links a[href*='account/login']")
+        self.wishlist_link = page.locator("#wishlist-total")
+        self.cart_link = page.locator("#top-links a[href*='checkout/cart']")
+
     def open(self):
         super().open(self.PATH)
+
+    def open_account_menu(self):
+        self.account_dropdown_toggle.click()
 
     def card(self, index):
         return self.featured_cards.nth(index)
@@ -45,3 +56,8 @@ class HomePage(BasePage):
 
     def open_cart(self):
         self.page.locator("#cart button").click()
+
+    def open_category(self, name):
+        link = self.menu.get_by_role("link", name=name, exact=False).first
+        href = link.get_attribute("href")
+        self.page.goto(href)
